@@ -1,0 +1,60 @@
+# 开发环境配置
+spring:
+  # PostgreSQL数据库配置
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/makebang?currentSchema=public&useUnicode=true&characterEncoding=utf8
+    username: makebang
+    password: makebang123
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: MakeBangHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+  # Flyway数据库迁移
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
+
+  # Redis配置
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: makebang123
+      database: 0
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
+
+# JWT配置
+jwt:
+  secret: makebang-secret-key-for-jwt-token-generation-2024
+  expiration: 86400000  # 24小时
+  refresh-expiration: 604800000  # 7天
+  header: Authorization
+  prefix: "Bearer "
+
+# 文件上传配置
+upload:
+  path: /data/makebang/uploads
+  allowed-types: jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,zip,rar
+  max-size: 52428800  # 50MB
+
+# 跨域配置
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:5173
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: "*"
+  allow-credentials: true
+  max-age: 3600

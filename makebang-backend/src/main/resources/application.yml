@@ -1,0 +1,92 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: makebang-backend
+
+  # Jackson配置
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+  # 文件上传配置
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+
+# MyBatis-Plus配置
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  type-aliases-package: com.makebang.entity
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deletedAt
+      logic-delete-value: NOW()
+      logic-not-delete-value: "NULL"
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# Knife4j配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+# 日志配置
+logging:
+  level:
+    root: info
+    com.makebang: debug
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# 码客邦自定义配置
+makebang:
+  # 语义搜索配置
+  embedding:
+    enabled: true
+    provider: openai
+    api-key: ${OPENAI_API_KEY:}
+    base-url: https://api.openai.com/v1
+    model: text-embedding-3-small
+    dimensions: 1536
+    timeout: 30
+    batch-size: 100
+    similarity-threshold: 0.5
+
+  # 文件存储配置
+  storage:
+    type: local  # local, aliyun-oss, tencent-cos, minio
+    max-file-size: 50  # MB
+    max-image-size: 10  # MB
+    thumbnail-width: 200
+    thumbnail-height: 200
+    local:
+      base-path: ./uploads
+      url-prefix: /uploads
+    aliyun-oss:
+      endpoint: ${ALIYUN_OSS_ENDPOINT:}
+      access-key-id: ${ALIYUN_OSS_ACCESS_KEY_ID:}
+      access-key-secret: ${ALIYUN_OSS_ACCESS_KEY_SECRET:}
+      bucket-name: ${ALIYUN_OSS_BUCKET:}
+      url-prefix: ${ALIYUN_OSS_URL_PREFIX:}

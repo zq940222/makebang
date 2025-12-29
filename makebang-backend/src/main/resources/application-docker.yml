@@ -1,0 +1,73 @@
+# Docker环境配置
+spring:
+  # PostgreSQL数据库配置
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${POSTGRES_HOST:postgres}:${POSTGRES_PORT:5432}/${POSTGRES_DB:makebang}?currentSchema=public&useUnicode=true&characterEncoding=utf8
+    username: ${POSTGRES_USER:makebang}
+    password: ${POSTGRES_PASSWORD:makebang123}
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      idle-timeout: 30000
+      pool-name: MakeBangHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+
+  # Redis配置
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:makebang123}
+      database: 0
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
+
+# JWT配置
+jwt:
+  secret: ${JWT_SECRET:bWFrZWJhbmctand0LXNlY3JldC1rZXktMjAyNC12ZXJ5LWxvbmctc3RyaW5n}
+  expiration: 86400000
+  refresh-expiration: 604800000
+  header: Authorization
+  prefix: "Bearer "
+
+# 文件上传配置
+upload:
+  path: /data/makebang/uploads
+  allowed-types: jpg,jpeg,png,gif,pdf,doc,docx,xls,xlsx,zip,rar
+  max-size: 52428800
+
+# 跨域配置
+cors:
+  allowed-origins: "*"
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: "*"
+  allow-credentials: true
+  max-age: 3600
+
+# Actuator配置(健康检查)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# 日志配置
+logging:
+  level:
+    root: info
+    com.makebang: info
+  file:
+    name: /app/logs/makebang.log
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

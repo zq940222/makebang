@@ -1,0 +1,59 @@
+# ============================
+# 码客邦项目 .gitignore
+# ============================
+
+# ========== 环境配置 ==========
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# ========== IDE ==========
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# ========== 操作系统 ==========
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ========== 日志 ==========
+*.log
+logs/
+
+# ========== 后端 (Java/Maven) ==========
+makebang-backend/target/
+makebang-backend/*.jar
+makebang-backend/.mvn/
+makebang-backend/mvnw
+makebang-backend/mvnw.cmd
+
+# ========== 前端 (Node/React) ==========
+makebang-frontend/node_modules/
+makebang-frontend/dist/
+makebang-frontend/build/
+makebang-frontend/.cache/
+makebang-frontend/coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ========== Docker ==========
+# 不忽略docker配置文件
+
+# ========== 测试 ==========
+coverage/
+test-results/
+*.test.js.snap
+
+# ========== 临时文件 ==========
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak

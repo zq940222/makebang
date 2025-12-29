@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库 (带pgvector扩展)
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: makebang-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-makebang}
+      POSTGRES_USER: ${POSTGRES_USER:-makebang}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-makebang123}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: Asia/Shanghai
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./deploy/docker/init-db:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - makebang-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-makebang} -d ${POSTGRES_DB:-makebang}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: makebang-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-makebang123}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - makebang-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-makebang123}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 后端服务
+  backend:
+    build:
+      context: ./makebang-backend
+      dockerfile: Dockerfile
+    container_name: makebang-backend
+    restart: unless-stopped
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-makebang}
+      POSTGRES_USER: ${POSTGRES_USER:-makebang}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-makebang123}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-makebang123}
+      JWT_SECRET: ${JWT_SECRET:-bWFrZWJhbmctand0LXNlY3JldC1rZXktMjAyNC12ZXJ5LWxvbmctc3RyaW5n}
+      TZ: Asia/Shanghai
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    networks:
+      - makebang-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # 前端服务
+  frontend:
+    build:
+      context: ./makebang-frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-/api}
+    container_name: makebang-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    networks:
+      - makebang-network
+    depends_on:
+      - backend
+
+  # Adminer - 数据库管理工具 (开发环境)
+  adminer:
+    image: adminer:latest
+    container_name: makebang-adminer
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+    networks:
+      - makebang-network
+    depends_on:
+      - postgres
+    profiles:
+      - dev
+
+  # Redis Commander - Redis管理工具 (开发环境)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: makebang-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:${REDIS_PASSWORD:-makebang123}
+    ports:
+      - "${REDIS_COMMANDER_PORT:-8082}:8081"
+    networks:
+      - makebang-network
+    depends_on:
+      - redis
+    profiles:
+      - dev
+
+networks:
+  makebang-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

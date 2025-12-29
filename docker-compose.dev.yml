@@ -1,0 +1,83 @@
+version: '3.8'
+
+# 开发环境配置 - 仅启动数据库和缓存服务
+# 使用方式: docker-compose -f docker-compose.dev.yml up -d
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: makebang-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: makebang
+      POSTGRES_USER: makebang
+      POSTGRES_PASSWORD: makebang123
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: Asia/Shanghai
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./deploy/docker/init-db:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - makebang-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U makebang -d makebang"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: makebang-redis-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass makebang123
+    volumes:
+      - redis_dev_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - makebang-dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "makebang123", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Adminer - 数据库管理工具
+  adminer:
+    image: adminer:latest
+    container_name: makebang-adminer-dev
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    networks:
+      - makebang-dev-network
+    depends_on:
+      - postgres
+
+  # Redis Commander - Redis管理工具
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: makebang-redis-commander-dev
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379:0:makebang123
+    ports:
+      - "8082:8081"
+    networks:
+      - makebang-dev-network
+    depends_on:
+      - redis
+
+networks:
+  makebang-dev-network:
+    driver: bridge
+
+volumes:
+  postgres_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
