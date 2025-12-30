@@ -102,55 +102,62 @@ makebang/
 - Docker & Docker Compose
 - Maven 3.8+
 
-### 使用 Docker Compose 启动（推荐）
+### 方式一：本地开发环境（推荐）
 
-1. **克隆项目**
+#### 1. 克隆项目
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/zq940222/makebang.git
 cd makebang
 ```
 
-2. **配置环境变量**
+#### 2. 启动数据库和缓存服务
 
 ```bash
-cp .env.example .env
-# 编辑 .env 文件，配置必要的环境变量
+# 启动 PostgreSQL 和 Redis（开发模式，包含管理工具）
+docker-compose -f docker-compose.dev.yml up -d
 ```
 
-3. **启动所有服务**
+等待容器启动完成后，数据库会自动：
+- 创建扩展（uuid-ossp, pgvector, pg_trgm）
+- 创建表结构
+- 初始化测试数据和管理员账号
 
-```bash
-# 生产模式
-docker-compose up -d
+#### 3. 配置 Maven 阿里云镜像（国内用户必须）
 
-# 开发模式（包含数据库管理工具）
-docker-compose --profile dev up -d
+创建或编辑 `~/.m2/settings.xml`：
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+    <mirrors>
+        <mirror>
+            <id>aliyunmaven</id>
+            <mirrorOf>*</mirrorOf>
+            <name>阿里云公共仓库</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </mirror>
+    </mirrors>
+</settings>
 ```
 
-4. **访问服务**
-
-| 服务 | 地址 | 说明 |
-|------|------|------|
-| 前端 | http://localhost:80 | Web应用 |
-| 后端API | http://localhost:8080 | API服务 |
-| API文档 | http://localhost:8080/doc.html | Knife4j |
-| Adminer | http://localhost:8081 | 数据库管理（dev模式） |
-| Redis Commander | http://localhost:8082 | Redis管理（dev模式） |
-
-### 本地开发
-
-#### 后端
+#### 4. 启动后端服务
 
 ```bash
 cd makebang-backend
 
-# 安装依赖并运行
-mvn clean install
-mvn spring-boot:run
+# 编译项目
+mvn clean install -DskipTests
+
+# 启动后端（开发模式）
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-#### 前端
+后端启动后访问：
+- API 服务：http://localhost:8080/api
+- API 文档：http://localhost:8080/api/doc.html
+
+#### 5. 启动前端服务
 
 ```bash
 cd makebang-frontend
@@ -161,6 +168,37 @@ yarn install  # 或 npm install
 # 启动开发服务器
 yarn dev  # 或 npm run dev
 ```
+
+前端启动后访问：http://localhost:5173
+
+### 方式二：Docker Compose 全栈部署
+
+```bash
+# 生产模式（前后端 + 数据库）
+docker-compose up -d
+
+# 开发模式（包含数据库管理工具）
+docker-compose --profile dev up -d
+```
+
+### 预置账号
+
+| 账号 | 用户名 | 密码 | 角色 |
+|------|--------|------|------|
+| 管理员 | `admin` | `admin123` | 超级管理员 |
+| 测试需求方 | `employer_test` | `admin123` | 普通用户 |
+| 测试程序员 | `developer_test` | `admin123` | 普通用户 |
+
+### 访问地址
+
+| 服务 | 地址 | 说明 |
+|------|------|------|
+| 前端 | http://localhost:5173 | Web应用（开发模式） |
+| 后端API | http://localhost:8080/api | API服务 |
+| API文档 | http://localhost:8080/api/doc.html | Knife4j |
+| 管理后台 | http://localhost:5173/admin | 需管理员登录 |
+| Adminer | http://localhost:8081 | 数据库管理 |
+| Redis Commander | http://localhost:8082 | Redis管理 |
 
 ## 环境配置
 

@@ -33,7 +33,8 @@ INSERT INTO category (name, parent_id, icon, sort) VALUES
 ('抖音小程序', 3, NULL, 3);
 
 -- 创建管理员账号 (密码: admin123, BCrypt加密)
-INSERT INTO "user" (username, password, phone, email, user_type, real_name, status)
+-- role: 0-普通用户 1-管理员 2-超级管理员
+INSERT INTO "user" (username, password, phone, email, user_type, real_name, status, role)
 VALUES (
     'admin',
     '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi',
@@ -41,11 +42,12 @@ VALUES (
     'admin@makebang.com',
     2,
     '系统管理员',
-    1
+    1,
+    2  -- 超级管理员
 );
 
 -- 创建测试需求方账号 (密码: test123)
-INSERT INTO "user" (username, password, phone, email, user_type, real_name, status)
+INSERT INTO "user" (username, password, phone, email, user_type, real_name, status, role)
 VALUES (
     'employer_test',
     '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi',
@@ -53,11 +55,12 @@ VALUES (
     'employer@makebang.com',
     0,
     '测试需求方',
-    1
+    1,
+    0  -- 普通用户
 );
 
 -- 创建测试程序员账号 (密码: test123)
-INSERT INTO "user" (username, password, phone, email, user_type, real_name, status)
+INSERT INTO "user" (username, password, phone, email, user_type, real_name, status, role)
 VALUES (
     'developer_test',
     '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi',
@@ -65,7 +68,8 @@ VALUES (
     'developer@makebang.com',
     1,
     '测试程序员',
-    1
+    1,
+    0  -- 普通用户
 );
 
 -- 为测试程序员创建资料
@@ -128,4 +132,4 @@ VALUES
 (1, 3, 6500, 14, '您好,我有丰富的企业官网开发经验,使用React+TypeScript技术栈已有3年。之前做过多个类似项目,可以高质量完成您的需求。', 0),
 (2, 3, 12000, 21, '您好,我熟悉微信小程序开发,使用Taro框架开发过多个商城类小程序。可以保证代码质量和按时交付。', 0);
 
-PRINT '初始化数据完成!';
+-- 初始化数据完成
