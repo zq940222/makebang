@@ -52,6 +52,14 @@ knife4j:
   setting:
     language: zh_cn
 
+# JWT配置（默认值，可被环境配置覆盖）
+jwt:
+  secret: ${JWT_SECRET:bWFrZWJhbmctc2VjcmV0LWtleS1mb3Itand0LXRva2VuLWdlbmVyYXRpb24tMjAyNA==}
+  expiration: ${JWT_EXPIRATION:86400000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+  header: Authorization
+  prefix: "Bearer "
+
 # 日志配置
 logging:
   level:

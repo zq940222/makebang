@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     real_name VARCHAR(50),
     id_card VARCHAR(20),
     status SMALLINT DEFAULT 1,     -- 0:禁用 1:正常
+    role SMALLINT DEFAULT 0,       -- 0:普通用户 1:管理员 2:超级管理员
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP
@@ -28,6 +29,7 @@ CREATE INDEX idx_user_status ON "user"(status) WHERE deleted_at IS NULL;
 COMMENT ON TABLE "user" IS '用户表';
 COMMENT ON COLUMN "user".user_type IS '用户类型: 0-需求方 1-程序员 2-两者';
 COMMENT ON COLUMN "user".status IS '状态: 0-禁用 1-正常';
+COMMENT ON COLUMN "user".role IS '角色: 0-普通用户 1-管理员 2-超级管理员';
 
 -- 程序员资料表
 CREATE TABLE IF NOT EXISTS developer_profile (
