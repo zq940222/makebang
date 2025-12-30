@@ -72,3 +72,4 @@ temp/
 *.temp
 *.bak
 *.orig
+makebang-frontend/package-lock.json
