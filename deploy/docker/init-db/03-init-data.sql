@@ -34,10 +34,11 @@ INSERT INTO category (name, parent_id, icon, sort) VALUES
 
 -- 创建管理员账号 (密码: admin123, BCrypt加密)
 -- role: 0-普通用户 1-管理员 2-超级管理员
+-- BCrypt hash 使用 https://bcrypt-generator.com/ 生成，rounds=10
 INSERT INTO "user" (username, password, phone, email, user_type, real_name, status, role)
 VALUES (
     'admin',
-    '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi',
+    '$2a$10$Tj5eQihtLyr88UEKhQ3LMeWAXIVIqoxd5z4fMTH1Oq72rAp8m7Cwy',
     '13800000000',
     'admin@makebang.com',
     2,
@@ -46,11 +47,11 @@ VALUES (
     2  -- 超级管理员
 );
 
--- 创建测试需求方账号 (密码: test123)
+-- 创建测试需求方账号 (密码: admin123)
 INSERT INTO "user" (username, password, phone, email, user_type, real_name, status, role)
 VALUES (
     'employer_test',
-    '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi',
+    '$2a$10$Tj5eQihtLyr88UEKhQ3LMeWAXIVIqoxd5z4fMTH1Oq72rAp8m7Cwy',
     '13800000001',
     'employer@makebang.com',
     0,
@@ -59,11 +60,11 @@ VALUES (
     0  -- 普通用户
 );
 
--- 创建测试程序员账号 (密码: test123)
+-- 创建测试程序员账号 (密码: admin123)
 INSERT INTO "user" (username, password, phone, email, user_type, real_name, status, role)
 VALUES (
     'developer_test',
-    '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi',
+    '$2a$10$Tj5eQihtLyr88UEKhQ3LMeWAXIVIqoxd5z4fMTH1Oq72rAp8m7Cwy',
     '13800000002',
     'developer@makebang.com',
     1,
