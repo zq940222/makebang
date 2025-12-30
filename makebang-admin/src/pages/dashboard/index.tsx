@@ -82,6 +82,8 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+      <h2 className="text-xl font-bold mb-4">数据概览</h2>
+
       {/* 核心指标 */}
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>

@@ -17,12 +17,6 @@ const MessageCenter = lazy(() => import('@/pages/message/MessageCenter'))
 const MyBids = lazy(() => import('@/pages/bid/MyBids'))
 const Wallet = lazy(() => import('@/pages/wallet/Wallet'))
 
-// 管理后台页面
-const AdminDashboard = lazy(() => import('@/pages/admin/Dashboard'))
-const UserManagement = lazy(() => import('@/pages/admin/UserManagement'))
-const ProjectReview = lazy(() => import('@/pages/admin/ProjectReview'))
-const WithdrawalReview = lazy(() => import('@/pages/admin/WithdrawalReview'))
-
 // 加载中组件
 const Loading = () => (
   <div className="flex items-center justify-center h-screen">
@@ -81,23 +75,6 @@ const routes: RouteObject[] = [
       {
         path: 'wallet',
         element: lazyLoad(Wallet),
-      },
-      // 管理后台路由
-      {
-        path: 'admin',
-        element: lazyLoad(AdminDashboard),
-      },
-      {
-        path: 'admin/users',
-        element: lazyLoad(UserManagement),
-      },
-      {
-        path: 'admin/projects',
-        element: lazyLoad(ProjectReview),
-      },
-      {
-        path: 'admin/withdrawals',
-        element: lazyLoad(WithdrawalReview),
       },
     ],
   },

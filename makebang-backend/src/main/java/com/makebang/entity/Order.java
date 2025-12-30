@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("`order`")
+@TableName("\"order\"")
 public class Order extends BaseEntity {
 
     @TableId(type = IdType.AUTO)

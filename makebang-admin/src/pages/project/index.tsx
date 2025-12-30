@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Card, Table, Input, Select, Tag, Button, Space, message, Modal, Avatar } from 'antd'
 import { SearchOutlined, UserOutlined, EyeOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
 import { getProjectList, approveProject, rejectProject, takedownProject, type AdminProjectVO } from '@/api/admin'
 import type { ColumnsType } from 'antd/es/table'
 
@@ -9,7 +8,6 @@ const { Option } = Select
 const { TextArea } = Input
 
 const ProjectReview = () => {
-  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const [projects, setProjects] = useState<AdminProjectVO[]>([])
   const [total, setTotal] = useState(0)
@@ -21,6 +19,7 @@ const ProjectReview = () => {
   // 拒绝/下架弹窗
   const [rejectModalOpen, setRejectModalOpen] = useState(false)
   const [takedownModalOpen, setTakedownModalOpen] = useState(false)
+  const [detailModalOpen, setDetailModalOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<AdminProjectVO | null>(null)
   const [reason, setReason] = useState('')
 
@@ -99,6 +98,11 @@ const ProjectReview = () => {
     }
   }
 
+  const openDetailModal = (project: AdminProjectVO) => {
+    setSelectedProject(project)
+    setDetailModalOpen(true)
+  }
+
   const statusMap: Record<number, { text: string; color: string }> = {
     0: { text: '待审核', color: 'orange' },
     1: { text: '招标中', color: 'blue' },
@@ -164,7 +168,7 @@ const ProjectReview = () => {
             type="link"
             size="small"
             icon={<EyeOutlined />}
-            onClick={() => navigate(`/projects/${record.id}`)}
+            onClick={() => openDetailModal(record)}
           >
             查看
           </Button>
@@ -204,6 +208,8 @@ const ProjectReview = () => {
 
   return (
     <div className="space-y-4">
+      <h2 className="text-xl font-bold mb-4">项目审核</h2>
+
       <Card>
         <div className="flex flex-wrap gap-4 mb-4">
           <Input
@@ -253,6 +259,49 @@ const ProjectReview = () => {
           }}
         />
       </Card>
+
+      {/* 项目详情弹窗 */}
+      <Modal
+        title="项目详情"
+        open={detailModalOpen}
+        onCancel={() => setDetailModalOpen(false)}
+        footer={null}
+        width={700}
+      >
+        {selectedProject && (
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-bold">{selectedProject.title}</h3>
+              <Tag color={statusMap[selectedProject.status]?.color}>
+                {statusMap[selectedProject.status]?.text}
+              </Tag>
+            </div>
+            <div>
+              <p className="text-gray-500 mb-1">项目描述:</p>
+              <p className="whitespace-pre-wrap">{selectedProject.description}</p>
+            </div>
+            <div className="flex gap-8">
+              <div>
+                <p className="text-gray-500 mb-1">预算范围:</p>
+                <p className="text-red-500 font-bold">
+                  ¥{selectedProject.budgetMin?.toLocaleString()} - ¥{selectedProject.budgetMax?.toLocaleString()}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-500 mb-1">发布时间:</p>
+                <p>{selectedProject.createdAt?.replace('T', ' ')}</p>
+              </div>
+            </div>
+            <div>
+              <p className="text-gray-500 mb-1">发布者:</p>
+              <div className="flex items-center">
+                <Avatar icon={<UserOutlined />} src={selectedProject.employer?.avatar} />
+                <span className="ml-2">{selectedProject.employer?.username}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
 
       {/* 拒绝弹窗 */}
       <Modal

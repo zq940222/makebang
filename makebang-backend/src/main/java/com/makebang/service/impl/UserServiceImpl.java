@@ -265,6 +265,7 @@ public class UserServiceImpl implements UserService {
                 .realName(user.getRealName())
                 .verified(StringUtils.hasText(user.getIdCard()))
                 .status(user.getStatus())
+                .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

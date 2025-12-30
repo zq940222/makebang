@@ -10,12 +10,7 @@ import {
   MessageOutlined,
   LogoutOutlined,
   LoginOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
   WalletOutlined,
-  DashboardOutlined,
-  TeamOutlined,
-  AuditOutlined,
 } from '@ant-design/icons'
 import { useSelector, useDispatch } from 'react-redux'
 import type { RootState } from '@/store'
@@ -28,7 +23,6 @@ const MainLayout = () => {
   const location = useLocation()
   const dispatch = useDispatch()
   const { isLoggedIn, currentUser } = useSelector((state: RootState) => state.user)
-  const [collapsed, setCollapsed] = useState(false)
 
   const menuItems = [
     {
@@ -47,9 +41,6 @@ const MainLayout = () => {
       label: '发布需求',
     },
   ]
-
-  // 判断是否是管理员
-  const isAdmin = currentUser?.role && currentUser.role >= 1
 
   const userMenuItems = [
     {
@@ -76,36 +67,6 @@ const MainLayout = () => {
       label: '消息中心',
       onClick: () => navigate('/messages'),
     },
-    // 管理员菜单
-    ...(isAdmin ? [
-      {
-        type: 'divider' as const,
-      },
-      {
-        key: 'admin',
-        icon: <DashboardOutlined />,
-        label: '管理后台',
-        onClick: () => navigate('/admin'),
-      },
-      {
-        key: 'admin-users',
-        icon: <TeamOutlined />,
-        label: '用户管理',
-        onClick: () => navigate('/admin/users'),
-      },
-      {
-        key: 'admin-projects',
-        icon: <AuditOutlined />,
-        label: '项目审核',
-        onClick: () => navigate('/admin/projects'),
-      },
-      {
-        key: 'admin-withdrawals',
-        icon: <WalletOutlined />,
-        label: '提现审核',
-        onClick: () => navigate('/admin/withdrawals'),
-      },
-    ] : []),
     {
       type: 'divider' as const,
     },

@@ -161,6 +161,8 @@ const WithdrawalReview = () => {
 
   return (
     <div className="space-y-4">
+      <h2 className="text-xl font-bold mb-4">提现审核</h2>
+
       <Card>
         <div className="flex flex-wrap gap-4 mb-4">
           <Select
